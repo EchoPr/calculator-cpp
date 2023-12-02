@@ -14,8 +14,7 @@ void Token_stream::putback(Token t)
     buffer = t;
     full = true;
 }
-
-std::vector<std::string> nesting_functions;  
+ 
 
 Token Token_stream::get()
 {
@@ -83,6 +82,10 @@ Token Token_stream::get()
                     calc_consts::func,
                     s
                 };
+
+            if (s == calc_consts::result){
+                
+            }
             }
 
             return Token{calc_consts::name, s};

@@ -12,6 +12,7 @@ namespace calc_consts {
     constexpr char name = 'a';
     constexpr char let = 'L';
     constexpr char func = 'F';
+    constexpr char redec = '=';
 
     const std::string sin_func = "sin";
     const std::string tg_func = "tg";

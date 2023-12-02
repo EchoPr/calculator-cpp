@@ -21,10 +21,14 @@ void error(const std::string& mes, const std::string& val)
 
 struct Variable
 {
-  std::string name;
-  double value;
+    std::string name;
+    double value;
 
-  Variable(std::string n, double v) : name{n}, value{v} {}
+    Variable(std::string n, double v) : name{n}, value{v} {}
+
+    void set_value(double v){
+        value = v;
+    }
 };
 
 std::vector<Variable> var_table;
@@ -66,15 +70,6 @@ bool is_declared (const std::string& s)
     return false;
 }
 
-double define_name (const std::string& var, double val)
-{
-    if (is_declared(var))
-        error(var, " declared twice");
-
-    var_table.push_back(Variable{var, val});
-
-    return val;
-}
 
 double expression (Token_stream&);
 
@@ -188,6 +183,43 @@ double expression (Token_stream& ts)
     }
 }
 
+double define_name (const std::string& var, double val)
+{
+    if (is_declared(var))
+        error(var, " declared twice");
+
+    var_table.push_back(Variable{var, val});
+
+    return val;
+}
+
+// double redeclaration (Token_stream& ts)
+// {
+//     Token t = ts.get();
+
+//     std::string var_name = t.name;
+//     std::cout << "--> " << var_name << std::endl;
+//     if (!is_declared(var_name))
+//         error(var_name, " was not declarated yet");
+
+//     t = ts.get();
+//     if (t.kind != '=')
+//         error("'=' missing in declaration of ", var_name);
+
+//     double val = expression(ts);
+//     for (int i = 0; i < var_table.size(); i++)
+//     {
+//         if (var_table[i].name == var_name){
+//             var_table.erase(var_table.begin() + i);
+//             var_table.push_back(Variable{var_name, val});
+//             break;
+//         }
+//     }
+
+//     return val;
+
+// }
+
 double declaration (Token_stream& ts)
 {
     Token t = ts.get();
@@ -195,14 +227,19 @@ double declaration (Token_stream& ts)
         error("name expected in declaration");
 
     std::string var = t.name;
-    if (is_declared(var))
-        error(var, " declared twice");
+    
 
     t = ts.get();
     if (t.kind != '=')
         error("'=' missing in declaration of ", var);
 
-    return define_name(var, expression(ts));
+    double value = expression(ts);
+    if (is_declared(var)){
+        set_value(var, value);
+        return value;
+    }
+    else
+        return define_name(var, value);
 }
 
 double statement (Token_stream& ts)
